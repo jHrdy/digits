@@ -1,0 +1,33 @@
+1. tyzden 
+ // Zaciatky 
+  - python
+  - git
+  - testing
+  - oboznamenie sa s ML
+
+2. tyzden
+ // Projekt
+  - scikit learn - kNN, DT, XGboostclassifier
+  - dataset loading, preprocessing 
+
+3. tyzden
+ // Implementacia
+  - implementacia a porovnanie algoritmov
+  - validacia 
+
+4. tyzden
+ // GUI
+  - PYQt6
+  - vytvorenie okna a gridu 
+  - citanie dokumentacie
+
+5. tyzden
+ // Interaktivne GUI
+  - pridanie moznosti kreslit 
+  - upravy UI
+
+6. tyzden 
+ // Prepojenie
+  - prepojenie uzivatelskeho vstupu s modelom
+  - vystup pre uzivatela
+  - finalizacia
