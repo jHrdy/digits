@@ -31,3 +31,5 @@
   - prepojenie uzivatelskeho vstupu s modelom
   - vystup pre uzivatela
   - finalizacia
+
+- Tomáš
