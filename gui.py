@@ -3,6 +3,10 @@ import torch
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout
 from PyQt5.QtGui import QPainter, QColor
 from PyQt5.QtCore import Qt, QRect
+from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QVBoxLayout, QHBoxLayout
+from PyQt5.QtGui import QFont
+
 from model import Net 
 import torch.nn.functional as F
 
@@ -19,20 +23,30 @@ class DrawGrid(QWidget):
 
     def initUI(self):
         self.setWindowTitle("Draw MNIST-like digit")
-        self.setGeometry(100, 100, CELL_SIZE*GRID_SIZE, CELL_SIZE*GRID_SIZE + 50)
+        self.setGeometry(200, 100, CELL_SIZE*GRID_SIZE, CELL_SIZE*GRID_SIZE + 50)
+
+        main_layout = QVBoxLayout()
+
+        self.pred_label = QLabel("Prediction: ")
+        self.pred_label.setFont(QFont("Arial", 24, QFont.Bold))
+        self.pred_label.setAlignment(Qt.AlignCenter)
+        main_layout.addWidget(self.pred_label)
 
         self.submit_btn = QPushButton("SUBMIT", self)
         self.submit_btn.clicked.connect(self.submit)
+
         self.submit_btn.setGeometry(10, CELL_SIZE*GRID_SIZE + 10, 100, 30)
         self.clear_btn = QPushButton("CLEAR", self)
         self.clear_btn.clicked.connect(self.clear_grid)
         self.clear_btn.setGeometry(120, CELL_SIZE*GRID_SIZE + 10, 100, 30)
+        self.pred_label = QLabel("Prediction: ", self)
+        self.pred_label.setGeometry(230, CELL_SIZE*GRID_SIZE + 10, 150, 30)
 
         self.show()
-    
+
     def clear_grid(self):
         self.grid = [[0 for _ in range(GRID_SIZE)] for _ in range(GRID_SIZE)]
-        self.update()  # prekreslí widget
+        self.update()
 
     def paintEvent(self, event):
         qp = QPainter()
@@ -65,8 +79,7 @@ class DrawGrid(QWidget):
             self.grid[y][x] = 1
             self.update()
 
-    def submit(self):
-        
+    def submit(self):    
         self.tensor_result = torch.tensor(self.grid, dtype=torch.float32)
         #print("Tensor shape:", self.tensor_result.shape)
         #print(self.tensor_result)
@@ -78,7 +91,7 @@ class DrawGrid(QWidget):
         x = F.interpolate(x, size=(28,28), mode='bilinear', align_corners=False)
         x = x.view(1, -1)
         
-        print(f'Neural network label: {net(x).argmax()}')
+        self.pred_label.setText(f"Prediction: {net(x).argmax()}")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
