@@ -2,13 +2,12 @@
 # fit DBSCAN for the specific class (if 3 is predicted fit dbscan with tensors labeled as 3)
 # for experimental purposes lets visualize outlier score (using knn or OCSVM)
 
-from sklearn.cluster import DBSCAN
+from sklearn.svm import OneClassSVM
 from load_data import data
 import pandas as pd
 import torch
-from model import Net
-
-from model import Net
+from plot_tensor import plot_tensor
+import matplotlib.pyplot as plt
 
 def get_dataframe():
     X = data.data.numpy()
@@ -20,25 +19,42 @@ def get_dataframe():
     print(df.columns)    
     return df
 
-get_dataframe()
+#get_dataframe()
 
-# debug this
+# continue working on this -> add feature to append user input to dataset and preditc its outlier measure
 
-def is_outlier(prediction_tensor, prediction_label):
-    df = get_dataframe()
-    df_subset = df[df['label'] == prediction_label]
+def is_outlier(input_tensor, predicted_label=3):
     
-    temp_df = {i : prediction_tensor[i] for i in range(len(prediction_tensor))}
-    temp_df['label'] = prediction_label
+    from test_script import trainset
+    from model import Net
 
-    temp_df = pd.DataFrame(temp_df)
+    # load data into numpy
+    X = data.data.numpy()
+    y = data.targets.numpy()
+    X = X.reshape(X.shape[0], -1)
+    
+    # create dataframe
+    df = pd.DataFrame(X)
+    df['label'] = y   
 
-    print(temp_df.head())
-    exit()
-    df_subset_with_new_value = pd.concat([df_subset, temp_df], axis=1)
-    dbscan = DBSCAN()
-    return dbscan.fit_predict(df_subset_with_new_value)
-from test_script import trainset
+    # filter for predicted label
+    df_N = df[df['label'] == predicted_label]
 
-x, label = trainset.__getitem__(0)
-print(is_outlier(x, label))
+    # compute outlier measure
+    out_detector = OneClassSVM()
+    out_detector.fit(df_N[:-1].values)
+    out_detector.predict(df_N[:-1].values)
+    out_measure = out_detector.score_samples(df_N[:-1].values)
+    
+    # plot outlier measure
+    plt.scatter(range(len(out_measure)), out_measure)
+    plt.show()
+    
+    # print index on lowest scoring point (OCSVM assigns low vals for likely outliers)
+    print(out_measure.argmin())
+
+# rand img for testing
+random_image = torch.rand(1, 28, 28).flatten()
+from plot_tensor import plot_tensor
+plot_tensor(random_image)
+#is_outlier()
